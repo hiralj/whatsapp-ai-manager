@@ -63,7 +63,7 @@ Three processes that share a single SQLite database:
 
 - Node.js 18+
 - Python 3.11+
-- An Anthropic API key
+- An OpenAI API key
 
 ### 1. Clone & install
 
@@ -155,9 +155,3 @@ Open [http://localhost:5173](http://localhost:5173).
 │   └── src/
 └── whatsapp-poc/     # Original Baileys spike (reference only)
 ```
-
----
-
-## License
-
-MIT
