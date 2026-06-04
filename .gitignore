@@ -1,0 +1,48 @@
+# ── WhatsApp session (NEVER commit — contains active credentials) ──
+whatsapp-poc/auth_info/
+backend/auth_info/
+
+# ── Databases ──
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+
+# ── Environment / secrets ──
+.env
+.env.local
+.env.*.local
+
+# ── Node ──
+node_modules/
+dist/
+.cache/
+
+# ── Python agent ──
+agent/venv/
+agent/__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# ── macOS ──
+.DS_Store
+
+# ── Logs ──
+*.log
+logs/
+
+# ── IDE / Editor ──
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── Planning docs (local only) ──
+PLAN.md
+*.pages
+*.docx
+backfill_multitenet.md
