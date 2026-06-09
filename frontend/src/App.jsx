@@ -1,6 +1,23 @@
-import { useState } from 'react'
+import { useState, Component } from 'react'
 import DigestTab from './tabs/DigestTab'
 import ActionsTab from './tabs/ActionsTab'
+
+// Catches render errors within a tab so a crash shows an inline message
+// instead of blanking the whole app. Example: bad JSON in ActionsTab.
+class TabErrorBoundary extends Component {
+  constructor(props) { super(props); this.state = { error: null } }
+  static getDerivedStateFromError(err) { return { error: err } }
+  render() {
+    if (this.state.error) {
+      return (
+        <div className="p-6 text-red-600 text-sm bg-red-50 rounded-lg border border-red-200">
+          Something went wrong in this tab: {this.state.error.message}
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
 
 const TABS = [
   { id: 'digest', label: 'Digest' },
@@ -34,8 +51,8 @@ export default function App() {
           ))}
         </div>
 
-        {activeTab === 'digest' && <DigestTab />}
-        {activeTab === 'actions' && <ActionsTab />}
+        {activeTab === 'digest' && <TabErrorBoundary key="digest"><DigestTab /></TabErrorBoundary>}
+        {activeTab === 'actions' && <TabErrorBoundary key="actions"><ActionsTab /></TabErrorBoundary>}
       </div>
     </div>
   )

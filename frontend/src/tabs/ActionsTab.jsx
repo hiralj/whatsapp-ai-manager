@@ -77,7 +77,8 @@ function ActionCard({ action, onDecision }) {
   }
 
   const label = ACTION_LABELS[action.action_type] || action.action_type
-  const context = action.context_json ? JSON.parse(action.context_json) : []
+  let context = []
+  try { context = action.context_json ? JSON.parse(action.context_json) : [] } catch (_) {}
 
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">

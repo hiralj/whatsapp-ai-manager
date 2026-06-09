@@ -3,6 +3,7 @@ const router = express.Router()
 const {
   getAllGroups,
   getLatestDaySummary,
+  getDaySummaries,
   setGroupEnabled,
   getPendingActions,
   updateActionStatus,
@@ -19,6 +20,15 @@ router.get('/groups', (req, res) => {
     latest_summary: getLatestDaySummary(g.chat_jid) || null,
   }))
   res.json(result)
+})
+
+// GET /api/groups/:chatJid/summaries?days=3
+router.get('/groups/:chatJid/summaries', (req, res) => {
+  const chatJid = decodeURIComponent(req.params.chatJid)
+  const days = Math.min(parseInt(req.query.days) || 7, 30)
+  const toDate = new Date().toISOString().split('T')[0]
+  const fromDate = new Date(Date.now() - (days - 1) * 86400000).toISOString().split('T')[0]
+  res.json(getDaySummaries(chatJid, fromDate, toDate))
 })
 
 // POST /api/groups/:chatJid/enable
