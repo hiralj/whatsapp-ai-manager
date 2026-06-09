@@ -13,13 +13,14 @@ function insertMessage(msg) {
 }
 
 
-function getUnprocessedMessages(chatJid, sinceTimestamp, limit = 200) {
+function getUnprocessedMessages(chatJid, fromTimestamp, toTimestamp, limit = 1000) {
   return getDB().prepare(`
     SELECT * FROM messages
-    WHERE chat_jid = ? AND processed = 0 AND timestamp >= ?
+    WHERE chat_jid = ? AND processed = 0
+      AND timestamp >= ? AND timestamp <= ?
     ORDER BY timestamp ASC
     LIMIT ?
-  `).all(chatJid, sinceTimestamp, limit)
+  `).all(chatJid, fromTimestamp, toTimestamp, limit)
 }
 
 function markMessagesProcessed(ids) {
@@ -28,17 +29,46 @@ function markMessagesProcessed(ids) {
   getDB().prepare(`UPDATE messages SET processed = 1 WHERE id IN (${placeholders})`).run(...ids)
 }
 
-function insertSummary(summary) {
+function upsertDaySummary(summary) {
   return getDB().prepare(`
-    INSERT INTO summaries (chat_jid, summary_text, message_count, from_timestamp, to_timestamp, trigger)
-    VALUES (@chat_jid, @summary_text, @message_count, @from_timestamp, @to_timestamp, @trigger)
+    INSERT INTO summaries (chat_jid, summary_date, summary_text, message_count, from_timestamp, to_timestamp, trigger)
+    VALUES (@chat_jid, @summary_date, @summary_text, @message_count, @from_timestamp, @to_timestamp, @trigger)
+    ON CONFLICT(chat_jid, summary_date) DO UPDATE SET
+      summary_text  = excluded.summary_text,
+      message_count = excluded.message_count,
+      from_timestamp = excluded.from_timestamp,
+      to_timestamp  = excluded.to_timestamp,
+      trigger       = excluded.trigger,
+      updated_at    = unixepoch()
   `).run(summary)
 }
 
-function getLatestSummary(chatJid) {
+function getDaySummary(chatJid, summaryDate) {
   return getDB().prepare(`
-    SELECT * FROM summaries WHERE chat_jid = ? ORDER BY created_at DESC LIMIT 1
+    SELECT * FROM summaries WHERE chat_jid = ? AND summary_date = ?
+  `).get(chatJid, summaryDate)
+}
+
+function getDaySummaries(chatJid, fromDate, toDate) {
+  return getDB().prepare(`
+    SELECT * FROM summaries
+    WHERE chat_jid = ? AND summary_date >= ? AND summary_date <= ?
+    ORDER BY summary_date ASC
+  `).all(chatJid, fromDate, toDate)
+}
+
+function getLatestDaySummary(chatJid) {
+  return getDB().prepare(`
+    SELECT * FROM summaries WHERE chat_jid = ? ORDER BY summary_date DESC LIMIT 1
   `).get(chatJid)
+}
+
+function upsertDaySummaries(rows) {
+  const db = getDB()
+  const run = db.transaction((rows) => {
+    for (const row of rows) upsertDaySummary(row)
+  })
+  run(rows)
 }
 
 function insertPendingAction(action) {
@@ -103,8 +133,11 @@ module.exports = {
   insertMessage,
   getUnprocessedMessages,
   markMessagesProcessed,
-  insertSummary,
-  getLatestSummary,
+  upsertDaySummary,
+  upsertDaySummaries,
+  getDaySummary,
+  getDaySummaries,
+  getLatestDaySummary,
   insertPendingAction,
   getPendingActions,
   updateActionStatus,

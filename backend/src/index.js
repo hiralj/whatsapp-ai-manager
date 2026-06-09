@@ -4,6 +4,7 @@ const cors = require('cors')
 const { initDB } = require('./db/schema')
 const { startWhatsApp } = require('./bridge/baileys')
 const routes = require('./api/routes')
+const { runSummarizer } = require('./summarizer')
 
 const PORT = process.env.PORT || 3000
 
@@ -20,8 +21,14 @@ async function main() {
     console.log(`✅ API server running on http://localhost:${PORT}`)
   })
 
+  const SUMMARIZER_INTERVAL_MS = 60 * 60 * 1000 // hourly
+
   await startWhatsApp(() => {
     console.log('✅ Baileys bridge ready')
+    runSummarizer().catch(err => console.error('Summarizer startup run failed:', err.message))
+    setInterval(() => {
+      runSummarizer().catch(err => console.error('Summarizer interval run failed:', err.message))
+    }, SUMMARIZER_INTERVAL_MS)
   })
 }
 
