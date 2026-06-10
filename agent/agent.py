@@ -5,7 +5,7 @@ load_dotenv()
 
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
-from typing import Any
+from typing import Any, Literal
 
 from langchain_openai import ChatOpenAI
 from langchain_core.messages import SystemMessage, HumanMessage
@@ -32,7 +32,7 @@ class TriggeringMessage(BaseModel):
     body: str
 
 class ActionDraft(BaseModel):
-    action_type: str
+    action_type: Literal["birthday_greeting", "anniversary", "congratulations", "condolences"]
     draft_text: str
     occasion_date: str  # YYYY-MM-DD of the day the occasion was evidenced
     triggering_messages: list[TriggeringMessage] = Field(default_factory=list)

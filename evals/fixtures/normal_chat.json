@@ -1,0 +1,17 @@
+{
+  "chat_jid": "120363001234567890@g.us",
+  "group_name": "College Friends",
+  "partitions": [
+    {
+      "date": "2026-06-08",
+      "messages": [
+        {"id": "m1", "sender_name": "Priya",  "body": "Anyone up for hiking this Saturday?",         "timestamp": 1749369600},
+        {"id": "m2", "sender_name": "Raj",    "body": "I'm in! Which trail?",                        "timestamp": 1749369660},
+        {"id": "m3", "sender_name": "Priya",  "body": "Thinking Sinhagad. Starts at 6am",            "timestamp": 1749369720},
+        {"id": "m4", "sender_name": "Neha",   "body": "Can't make it this weekend, next time!",      "timestamp": 1749369780},
+        {"id": "m5", "sender_name": "Raj",    "body": "Confirmed for Sinhagad. I'll bring snacks",   "timestamp": 1749369840},
+        {"id": "m6", "sender_name": "Priya",  "body": "Perfect. Will share the meetup point later",  "timestamp": 1749369900}
+      ]
+    }
+  ]
+}

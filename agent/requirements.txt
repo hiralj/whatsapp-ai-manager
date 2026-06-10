@@ -4,3 +4,5 @@ fastapi
 uvicorn[standard]
 aiosqlite
 python-dotenv
+pytest
+httpx

@@ -1,0 +1,18 @@
+{
+  "_comment": "Two distinct people (Alex and Maria) both have birthdays — agent must produce TWO separate drafts",
+  "chat_jid": "120363002222222222@g.us",
+  "group_name": "Apartment Society",
+  "partitions": [
+    {
+      "date": "2026-06-08",
+      "messages": [
+        {"id": "m1", "sender_name": "Ramesh",  "body": "Happy Birthday Alex! 🎂",               "timestamp": 1749369600},
+        {"id": "m2", "sender_name": "Sunita",  "body": "Wishing Alex a fantastic birthday 🎉",  "timestamp": 1749369660},
+        {"id": "m3", "sender_name": "Deepak",  "body": "Happy birthday Maria! 🥳",              "timestamp": 1749369720},
+        {"id": "m4", "sender_name": "Kavita",  "body": "HBD Maria!! Hope it's amazing",         "timestamp": 1749369780},
+        {"id": "m5", "sender_name": "Alex",    "body": "Thank you everyone! 😊",                "timestamp": 1749369840},
+        {"id": "m6", "sender_name": "Maria",   "body": "Thanks so much!! Love this group ❤️",  "timestamp": 1749369900}
+      ]
+    }
+  ]
+}

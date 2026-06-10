@@ -1,0 +1,15 @@
+{
+  "_comment": "Empty-body messages (images/stickers). baileys.js filters these in production, but the agent must handle gracefully if they arrive.",
+  "chat_jid": "120363003333333333@g.us",
+  "group_name": "Memes Group",
+  "partitions": [
+    {
+      "date": "2026-06-08",
+      "messages": [
+        {"id": "m1", "sender_name": "Arun",  "body": "", "timestamp": 1749369600},
+        {"id": "m2", "sender_name": "Priti", "body": "", "timestamp": 1749369660},
+        {"id": "m3", "sender_name": "Karan", "body": "", "timestamp": 1749369720}
+      ]
+    }
+  ]
+}

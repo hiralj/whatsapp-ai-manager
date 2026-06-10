@@ -1,0 +1,23 @@
+{
+  "_comment": "Two-day batch — agent must return exactly one summary per partition",
+  "chat_jid": "120363005555555555@g.us",
+  "group_name": "Family Group",
+  "partitions": [
+    {
+      "date": "2026-06-08",
+      "messages": [
+        {"id": "m1", "sender_name": "Mom", "body": "Dinner at 7pm tonight?",           "timestamp": 1749369600},
+        {"id": "m2", "sender_name": "Dad", "body": "Yes, I'll be home by 6:30",        "timestamp": 1749369660},
+        {"id": "m3", "sender_name": "Sis", "body": "I'll join too, sounds good!",      "timestamp": 1749369720}
+      ]
+    },
+    {
+      "date": "2026-06-09",
+      "messages": [
+        {"id": "m4", "sender_name": "Mom", "body": "That was a lovely dinner, let's do it again soon!", "timestamp": 1749456000},
+        {"id": "m5", "sender_name": "Sis", "body": "Agreed! Same time next week?",     "timestamp": 1749456060},
+        {"id": "m6", "sender_name": "Dad", "body": "Works for me",                     "timestamp": 1749456120}
+      ]
+    }
+  ]
+}

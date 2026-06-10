@@ -1,0 +1,17 @@
+{
+  "chat_jid": "120363009876543210@g.us",
+  "group_name": "Work Team Alpha",
+  "partitions": [
+    {
+      "date": "2026-06-08",
+      "messages": [
+        {"id": "m1", "sender_name": "Alice",   "body": "Happy Birthday Sarah!! 🎂🎉",              "timestamp": 1749369600},
+        {"id": "m2", "sender_name": "Bob",     "body": "HBD Sarah! Hope you have a great day",     "timestamp": 1749369660},
+        {"id": "m3", "sender_name": "Charlie", "body": "Happy birthday Sarah! 🎈",                 "timestamp": 1749369720},
+        {"id": "m4", "sender_name": "Diana",   "body": "Many many happy returns Sarah 🥳",         "timestamp": 1749369780},
+        {"id": "m5", "sender_name": "Sarah",   "body": "Aww thank you all so much! ❤️",            "timestamp": 1749369840},
+        {"id": "m6", "sender_name": "Eve",     "body": "Happy bday! Wishing you all the best 🎁",  "timestamp": 1749369900}
+      ]
+    }
+  ]
+}

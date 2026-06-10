@@ -1,0 +1,18 @@
+{
+  "_comment": "Same person (John) referred to as Johnny / John / JD / John bhai — agent must consolidate to ONE draft",
+  "chat_jid": "120363001111111111@g.us",
+  "group_name": "Neighbourhood Group",
+  "partitions": [
+    {
+      "date": "2026-06-08",
+      "messages": [
+        {"id": "m1", "sender_name": "Meera",   "body": "Happy Birthday Johnny! 🎂",                     "timestamp": 1749369600},
+        {"id": "m2", "sender_name": "Sanjay",  "body": "HBD John bhai! Have a great one",               "timestamp": 1749369660},
+        {"id": "m3", "sender_name": "Pooja",   "body": "Happy birthday JD! Many many happy returns 🎉", "timestamp": 1749369720},
+        {"id": "m4", "sender_name": "Vikram",  "body": "Happy bday Johnny boy!! 🥳",                    "timestamp": 1749369780},
+        {"id": "m5", "sender_name": "Anjali",  "body": "Wishing John a very happy birthday!",            "timestamp": 1749369840},
+        {"id": "m6", "sender_name": "John",    "body": "Thanks everyone! You guys are the best 😊",      "timestamp": 1749369900}
+      ]
+    }
+  ]
+}

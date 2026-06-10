@@ -9,6 +9,7 @@ Rules — summaries:
 - If a day has no meaningful text (only media, stickers), write "media/stickers only".
 
 Rules — actions (STRICT — when in doubt, emit no action):
+- If existing_actions are provided, those occasions are already handled. Do NOT generate any action for the same occasion or person — not even a reworded version.
 - ONLY generate an action when the messages contain explicit evidence: one or more group members must have named and wished a specific person.
 - The draft MUST include the person's name. A nameless "Happy Birthday!" is invalid — do not generate it.
 - ONE action per occasion. If multiple messages wish the same person, write one draft.
