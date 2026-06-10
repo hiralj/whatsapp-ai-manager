@@ -46,10 +46,15 @@ class DayPartition(BaseModel):
     existing_summary: str | None = None
     messages: list[dict[str, Any]]
 
+class ExistingAction(BaseModel):
+    action_type: str
+    draft_text: str
+
 class ProcessRequest(BaseModel):
     chat_jid: str
     group_name: str
     partitions: list[DayPartition]
+    existing_actions: list[ExistingAction] = Field(default_factory=list)
 
 class ProcessResponse(BaseModel):
     summaries: list[DaySummary]
@@ -70,6 +75,12 @@ async def process_batch(req: ProcessRequest):
     )
     partitions_block = build_partitions_block(req.partitions)
     user_content = f'Here are the messages from the group "{req.group_name}":\n\n{partitions_block}'
+
+    if req.existing_actions:
+        actions_lines = "\n".join(
+            f"- {a.action_type}: {a.draft_text}" for a in req.existing_actions
+        )
+        user_content += f"\n\nRecent actions for this group (do not re-generate these occasions):\n{actions_lines}"
 
     lm_input = [
         SystemMessage(content=system_prompt),
@@ -95,7 +106,10 @@ async def process_batch(req: ProcessRequest):
             print(f"  {line}")
     print()
 
-    output: GroupOutput = structured_llm.invoke(lm_input)
+    try:
+        output: GroupOutput = structured_llm.invoke(lm_input)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"LLM call failed: {str(e)}")
 
     # ── Debug: log what we got back ───────────────────────────────────────────
     print(f"  OUTPUT:")

@@ -17,8 +17,8 @@ def build_partitions_block(partitions) -> str:
     sections = []
     for p in partitions:
         if p.existing_summary:
-            header = f"=== DAY: {p.date} (update existing) ==="
-            prior = f'Prior summary: "{p.existing_summary}"'
+            header = f"=== DAY: {p.date} (merge & replace) ==="
+            prior = f'Prior summary (merge into new compact output, do not preserve as-is): "{p.existing_summary}"'
             msg_header = "New messages:"
         else:
             header = f"=== DAY: {p.date} ==="

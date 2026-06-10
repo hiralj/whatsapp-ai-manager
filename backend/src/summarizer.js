@@ -6,6 +6,8 @@ const {
   markMessagesProcessed,
   updateLastSummarized,
   insertPendingAction,
+  getRecentActionsForGroup,
+  purgeOldData,
 } = require('./db/queries')
 const { toSummaryDate, lookbackTimestamp, LOOKBACK_DAYS } = require('./config')
 
@@ -61,11 +63,18 @@ async function processGroup(group, fromTs, toTs) {
     })),
   }))
 
+  const recentActions = getRecentActionsForGroup(group.chat_jid, fromTs)
+
   // Call Python agent — LLM work happens there
   const response = await fetch(`${AGENT_URL}/process`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ chat_jid: group.chat_jid, group_name: group.display_name, partitions }),
+    body: JSON.stringify({
+      chat_jid: group.chat_jid,
+      group_name: group.display_name,
+      partitions,
+      existing_actions: recentActions,
+    }),
   })
 
   if (!response.ok) {

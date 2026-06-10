@@ -78,6 +78,23 @@ function insertPendingAction(action) {
   `).run(action)
 }
 
+function getRecentActionsForGroup(chatJid, fromTimestamp) {
+  return getDB().prepare(`
+    SELECT action_type, draft_text FROM pending_actions
+    WHERE chat_jid = ? AND created_at >= ?
+    ORDER BY created_at DESC
+  `).all(chatJid, fromTimestamp)
+}
+
+function purgeOldData(daysOld = 30) {
+  const cutoff = Math.floor(Date.now() / 1000) - daysOld * 86400
+  const r1 = getDB().prepare(`DELETE FROM messages WHERE processed = 1 AND timestamp < ?`).run(cutoff)
+  const r2 = getDB().prepare(`DELETE FROM pending_actions WHERE created_at < ?`).run(cutoff)
+  if (r1.changes || r2.changes) {
+    console.log(`Purged ${r1.changes} messages, ${r2.changes} actions older than ${daysOld} days`)
+  }
+}
+
 function getPendingActions(status = 'pending') {
   return getDB().prepare(`
     SELECT pa.*, gc.display_name
@@ -140,10 +157,12 @@ module.exports = {
   getLatestDaySummary,
   insertPendingAction,
   getPendingActions,
+  getRecentActionsForGroup,
   updateActionStatus,
   upsertGroupConfig,
   setGroupEnabled,
   getEnabledGroups,
   getAllGroups,
   updateLastSummarized,
+  purgeOldData,
 }
