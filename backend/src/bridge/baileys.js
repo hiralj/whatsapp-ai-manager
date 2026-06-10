@@ -57,7 +57,12 @@ async function startWhatsApp(onConnected) {
   })
 
   // History sync — WhatsApp pushes recent history on connect
+  let historySyncStart = null
   sock.ev.on('messaging-history.set', ({ messages, chats, isLatest }) => {
+    if (!historySyncStart) {
+      historySyncStart = Date.now()
+      console.log('History sync: first batch received')
+    }
     const batch = messages || []
     let inserted = 0
     for (const msg of batch) {
@@ -67,6 +72,10 @@ async function startWhatsApp(onConnected) {
       } catch (_) {}
     }
     console.log(`History sync: batch=${batch.length} inserted=${inserted} isLatest=${isLatest}`)
+    if (isLatest) {
+      const elapsedMs = Date.now() - historySyncStart
+      console.log(`History sync complete — total elapsed: ${elapsedMs}ms (${(elapsedMs / 1000).toFixed(1)}s)`)
+    }
   })
 }
 

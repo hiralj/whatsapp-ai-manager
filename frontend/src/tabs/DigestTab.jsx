@@ -1,9 +1,12 @@
 import { useState, useEffect, useCallback } from 'react'
-import { fetchGroups, triggerSummarize, enableGroup } from '../api'
+import { fetchGroups, fetchGroupSummaries, triggerSummarize, enableGroup } from '../api'
 
-function formatTs(unix) {
-  if (!unix) return '—'
-  return new Date(unix * 1000).toLocaleString()
+// formatDate('2026-06-09') → 'Tue, Jun 9'
+function formatDate(dateStr) {
+  // append time to avoid UTC midnight shifting the date back one day
+  return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', {
+    weekday: 'short', month: 'short', day: 'numeric',
+  })
 }
 
 export default function DigestTab() {
@@ -109,36 +112,88 @@ export default function DigestTab() {
   )
 }
 
+const RANGES = [
+  { key: 'today', label: 'Today',  days: 1 },
+  { key: '3d',    label: '3 days', days: 3 },
+  { key: '7d',    label: '1 week', days: 7 },
+]
+
+// Single group card with Today / 3 days / 1 week range toggle.
+// "Today" uses the summary already in props; other ranges fetch on first
+// click and cache in local state to avoid re-fetching on toggle.
+// Example: clicking "3 days" fetches /api/groups/<jid>/summaries?days=3
+// and renders one date-labelled section per day that has a summary.
 function GroupCard({ group, onToggle }) {
-  const summary = group.latest_summary
+  const [range, setRange] = useState('today')
+  const [cache, setCache] = useState({})   // { '3d': [...], '7d': [...] }
+  const [fetching, setFetching] = useState(false)
+
+  // selectRange('3d') — switches view; fetches from API if not yet cached
+  async function selectRange(r) {
+    setRange(r)
+    if (r === 'today' || cache[r]) return
+    setFetching(true)
+    try {
+      const days = RANGES.find(x => x.key === r).days
+      const data = await fetchGroupSummaries(group.chat_jid, days)
+      setCache(c => ({ ...c, [r]: data }))
+    } finally {
+      setFetching(false)
+    }
+  }
+
+  const summaries = range === 'today'
+    ? (group.latest_summary ? [group.latest_summary] : [])
+    : (cache[range] || [])
 
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
       <div className="flex items-start justify-between mb-3">
-        <div>
-          <h3 className="font-semibold text-gray-800">{group.display_name || group.chat_jid}</h3>
-          {summary && (
-            <p className="text-xs text-gray-400 mt-0.5">
-              Last summarized: {formatTs(summary.created_at)}
-              {summary.message_count && ` · ${summary.message_count} messages`}
-            </p>
-          )}
+        <h3 className="font-semibold text-gray-800">{group.display_name || group.chat_jid}</h3>
+        <div className="flex items-center gap-1.5">
+          {RANGES.map(r => (
+            <button
+              key={r.key}
+              onClick={() => selectRange(r.key)}
+              className={`text-xs px-2.5 py-1 rounded-full border transition ${
+                range === r.key
+                  ? 'bg-green-600 text-white border-green-600'
+                  : 'bg-white text-gray-500 border-gray-300 hover:border-gray-400'
+              }`}
+            >
+              {r.label}
+            </button>
+          ))}
+          <button
+            onClick={() => onToggle(group.chat_jid, true)}
+            className="text-xs px-2 py-1 text-gray-400 hover:text-red-500 transition ml-1"
+            title="Disable this group"
+          >
+            Disable
+          </button>
         </div>
-        <button
-          onClick={() => onToggle(group.chat_jid, true)}
-          className="text-xs px-2 py-1 text-gray-400 hover:text-red-500 transition"
-          title="Disable this group"
-        >
-          Disable
-        </button>
       </div>
 
-      {summary ? (
-        <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">
-          {summary.summary_text}
-        </p>
-      ) : (
+      {fetching ? (
+        <p className="text-gray-400 text-sm italic">Loading…</p>
+      ) : summaries.length === 0 ? (
         <p className="text-gray-400 text-sm italic">No summary yet — click "Summarize Today" to generate one.</p>
+      ) : (
+        <div className="space-y-4">
+          {[...summaries].reverse().map(s => (
+            <div key={s.summary_date}>
+              {range !== 'today' && (
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+                  {formatDate(s.summary_date)}
+                  {s.message_count ? ` · ${s.message_count} msgs` : ''}
+                </p>
+              )}
+              <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-line">
+                {s.summary_text}
+              </p>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   )

@@ -32,6 +32,12 @@ export async function submitActionDecision(id, decision, text = null) {
   return res.json()
 }
 
+export async function fetchGroupSummaries(chatJid, days) {
+  const res = await fetch(`${BASE}/groups/${encodeURIComponent(chatJid)}/summaries?days=${days}`)
+  if (!res.ok) throw new Error('Failed to fetch summaries')
+  return res.json()
+}
+
 export async function enableGroup(chatJid, enabled = true) {
   const res = await fetch(`${BASE}/groups/${encodeURIComponent(chatJid)}/enable`, {
     method: 'POST',

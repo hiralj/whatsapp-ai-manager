@@ -32,14 +32,17 @@ function initDB() {
     CREATE TABLE IF NOT EXISTS summaries (
       id              INTEGER PRIMARY KEY AUTOINCREMENT,
       chat_jid        TEXT NOT NULL,
+      summary_date    TEXT NOT NULL,
       summary_text    TEXT NOT NULL,
-      message_count   INTEGER,
+      message_count   INTEGER DEFAULT 0,
       from_timestamp  INTEGER,
       to_timestamp    INTEGER,
-      trigger         TEXT DEFAULT 'manual',
-      created_at      INTEGER DEFAULT (unixepoch())
+      trigger         TEXT DEFAULT 'auto',
+      created_at      INTEGER DEFAULT (unixepoch()),
+      updated_at      INTEGER DEFAULT (unixepoch()),
+      UNIQUE(chat_jid, summary_date)
     );
-    CREATE INDEX IF NOT EXISTS idx_summaries_chat ON summaries(chat_jid, created_at DESC);
+    CREATE INDEX IF NOT EXISTS idx_summaries_chat_date ON summaries(chat_jid, summary_date DESC);
 
     CREATE TABLE IF NOT EXISTS pending_actions (
       id            INTEGER PRIMARY KEY AUTOINCREMENT,
