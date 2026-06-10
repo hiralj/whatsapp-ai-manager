@@ -71,16 +71,16 @@ function upsertDaySummaries(rows) {
   run(rows)
 }
 
-function insertPendingAction(action) {
+function insertAction(action) {
   return getDB().prepare(`
-    INSERT INTO pending_actions (chat_jid, action_type, context_json, draft_text)
-    VALUES (@chat_jid, @action_type, @context_json, @draft_text)
+    INSERT INTO actions (chat_jid, action_type, context_json, draft_text, occasion_date)
+    VALUES (@chat_jid, @action_type, @context_json, @draft_text, @occasion_date)
   `).run(action)
 }
 
 function getRecentActionsForGroup(chatJid, fromTimestamp) {
   return getDB().prepare(`
-    SELECT action_type, draft_text FROM pending_actions
+    SELECT action_type, draft_text FROM actions
     WHERE chat_jid = ? AND created_at >= ?
     ORDER BY created_at DESC
   `).all(chatJid, fromTimestamp)
@@ -89,25 +89,25 @@ function getRecentActionsForGroup(chatJid, fromTimestamp) {
 function purgeOldData(daysOld = 30) {
   const cutoff = Math.floor(Date.now() / 1000) - daysOld * 86400
   const r1 = getDB().prepare(`DELETE FROM messages WHERE processed = 1 AND timestamp < ?`).run(cutoff)
-  const r2 = getDB().prepare(`DELETE FROM pending_actions WHERE created_at < ?`).run(cutoff)
+  const r2 = getDB().prepare(`DELETE FROM actions WHERE created_at < ?`).run(cutoff)
   if (r1.changes || r2.changes) {
     console.log(`Purged ${r1.changes} messages, ${r2.changes} actions older than ${daysOld} days`)
   }
 }
 
-function getPendingActions(status = 'pending') {
+function getActions(status = 'pending') {
   return getDB().prepare(`
-    SELECT pa.*, gc.display_name
-    FROM pending_actions pa
-    LEFT JOIN group_config gc ON pa.chat_jid = gc.chat_jid
-    WHERE pa.status = ?
-    ORDER BY pa.created_at DESC
+    SELECT a.*, gc.display_name
+    FROM actions a
+    LEFT JOIN group_config gc ON a.chat_jid = gc.chat_jid
+    WHERE a.status = ?
+    ORDER BY a.created_at DESC
   `).all(status)
 }
 
 function updateActionStatus(id, status, finalText = null) {
   getDB().prepare(`
-    UPDATE pending_actions
+    UPDATE actions
     SET status = ?, final_text = ?, sent_at = CASE WHEN ? = 'approved' THEN unixepoch() ELSE NULL END
     WHERE id = ?
   `).run(status, finalText, status, id)
@@ -155,8 +155,8 @@ module.exports = {
   getDaySummary,
   getDaySummaries,
   getLatestDaySummary,
-  insertPendingAction,
-  getPendingActions,
+  insertAction,
+  getActions,
   getRecentActionsForGroup,
   updateActionStatus,
   upsertGroupConfig,

@@ -3,7 +3,9 @@ import { fetchActions, submitActionDecision } from '../api'
 
 const ACTION_LABELS = {
   birthday_greeting: '🎂 Birthday Greeting',
-  group_announcement: '📢 Announcement',
+  congratulations: '🎊 Congratulations',
+  anniversary: '🌸 Anniversary',
+  condolence: '🙏 Condolence',
 }
 
 export default function ActionsTab() {
@@ -83,9 +85,14 @@ function ActionCard({ action, onDecision }) {
   return (
     <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm">
       <div className="flex items-center justify-between mb-3">
-        <span className="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">
-          {label}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">
+            {label}
+          </span>
+          {action.occasion_date && (
+            <span className="text-xs text-gray-400">{action.occasion_date}</span>
+          )}
+        </div>
         <span className="text-xs text-gray-400">{action.display_name || action.chat_jid}</span>
       </div>
 
@@ -93,7 +100,11 @@ function ActionCard({ action, onDecision }) {
         <div className="mb-3 p-3 bg-gray-50 rounded-lg border border-gray-100 text-xs text-gray-500 space-y-1">
           <p className="font-medium text-gray-600 mb-1">Triggered by:</p>
           {context.slice(0, 3).map((m, i) => (
-            <p key={i}><span className="font-medium">{m.sender_name}:</span> {m.body}</p>
+            <p key={i}>
+              {typeof m === 'string'
+                ? m
+                : <><span className="font-medium">{m.sender_name}:</span> {m.body}</>}
+            </p>
           ))}
           {context.length > 3 && <p>+{context.length - 3} more</p>}
         </div>

@@ -5,7 +5,7 @@ const {
   getLatestDaySummary,
   getDaySummaries,
   setGroupEnabled,
-  getPendingActions,
+  getActions,
   updateActionStatus,
 } = require('../db/queries')
 const { sendMessage, getSock } = require('../bridge/baileys')
@@ -54,7 +54,7 @@ router.post('/summarize', async (req, res) => {
 // GET /api/actions
 router.get('/actions', (req, res) => {
   const status = req.query.status || 'pending'
-  res.json(getPendingActions(status))
+  res.json(getActions(status))
 })
 
 // POST /api/actions/:id — approve / reject / edit
@@ -66,7 +66,7 @@ router.post('/actions/:id', async (req, res) => {
     return res.status(400).json({ error: 'decision must be approve | reject | edit' })
   }
 
-  const actions = getPendingActions('pending')
+  const actions = getActions('pending')
   const action = actions.find(a => a.id === id)
   if (!action) return res.status(404).json({ error: 'Action not found or not pending' })
 

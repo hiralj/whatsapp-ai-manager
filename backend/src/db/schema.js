@@ -44,18 +44,19 @@ function initDB() {
     );
     CREATE INDEX IF NOT EXISTS idx_summaries_chat_date ON summaries(chat_jid, summary_date DESC);
 
-    CREATE TABLE IF NOT EXISTS pending_actions (
+    CREATE TABLE IF NOT EXISTS actions (
       id            INTEGER PRIMARY KEY AUTOINCREMENT,
       chat_jid      TEXT NOT NULL,
       action_type   TEXT NOT NULL,
       context_json  TEXT,
       draft_text    TEXT NOT NULL,
+      occasion_date TEXT,
       status        TEXT DEFAULT 'pending',
       final_text    TEXT,
       sent_at       INTEGER,
       created_at    INTEGER DEFAULT (unixepoch())
     );
-    CREATE INDEX IF NOT EXISTS idx_pending_status ON pending_actions(status, created_at);
+    CREATE INDEX IF NOT EXISTS idx_actions_status ON actions(status, created_at);
 
     CREATE TABLE IF NOT EXISTS group_config (
       chat_jid            TEXT PRIMARY KEY,

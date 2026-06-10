@@ -5,7 +5,7 @@ const {
   upsertDaySummaries,
   markMessagesProcessed,
   updateLastSummarized,
-  insertPendingAction,
+  insertAction,
   getRecentActionsForGroup,
   purgeOldData,
 } = require('./db/queries')
@@ -103,10 +103,11 @@ async function processGroup(group, fromTs, toTs) {
   upsertDaySummaries(summaryRows)
 
   for (const action of actions) {
-    insertPendingAction({
+    insertAction({
       chat_jid: group.chat_jid,
       action_type: action.action_type,
       draft_text: action.draft_text,
+      occasion_date: action.occasion_date,
       context_json: action.context_json,
     })
   }

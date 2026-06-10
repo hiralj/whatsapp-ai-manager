@@ -27,10 +27,15 @@ class DaySummary(BaseModel):
     date: str        # YYYY-MM-DD
     summary_text: str
 
+class TriggeringMessage(BaseModel):
+    sender_name: str
+    body: str
+
 class ActionDraft(BaseModel):
-    action_type: str   # 'birthday_greeting' or 'group_announcement'
+    action_type: str
     draft_text: str
-    context_json: str  # JSON string of the triggering messages
+    occasion_date: str  # YYYY-MM-DD of the day the occasion was evidenced
+    triggering_messages: list[TriggeringMessage] = Field(default_factory=list)
 
 class GroupOutput(BaseModel):
     summaries: list[DaySummary]
@@ -56,9 +61,15 @@ class ProcessRequest(BaseModel):
     partitions: list[DayPartition]
     existing_actions: list[ExistingAction] = Field(default_factory=list)
 
+class ActionDraftResponse(BaseModel):
+    action_type: str
+    draft_text: str
+    occasion_date: str
+    context_json: str
+
 class ProcessResponse(BaseModel):
     summaries: list[DaySummary]
-    actions: list[ActionDraft]
+    actions: list[ActionDraftResponse]
 
 
 # ── Endpoint ──────────────────────────────────────────────────────────────────
@@ -121,7 +132,16 @@ async def process_batch(req: ProcessRequest):
         print(f"    - {a.action_type}: {a.draft_text[:80]}")
     print(f"{SEP}\n")
 
-    return ProcessResponse(summaries=output.summaries, actions=output.actions)
+    actions = [
+        ActionDraftResponse(
+            action_type=a.action_type,
+            draft_text=a.draft_text,
+            occasion_date=a.occasion_date,
+            context_json=json.dumps([{"sender_name": m.sender_name, "body": m.body} for m in a.triggering_messages]),
+        )
+        for a in output.actions
+    ]
+    return ProcessResponse(summaries=output.summaries, actions=actions)
 
 
 @app.get("/health")
