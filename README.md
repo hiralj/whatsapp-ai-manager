@@ -18,12 +18,12 @@ Three processes that share a single SQLite database:
 
 ```
 ┌─────────────────────────────┐     ┌──────────────────────────────┐
-│  Process 1 — Node.js        │     │  Process 2 — Python / LangGraph│
+│  Process 1 — Node.js        │     │  Process 2 — Python / FastAPI │
 │  backend/  (port 3000)      │────▶│  agent/     (port 8000)       │
 │                             │     │                               │
-│  • Baileys WA bridge        │     │  • FastAPI + LangGraph ReAct  │
-│  • SQLite writes             │     │  • Summarize tool             │
-│  • Express REST API         │     │  • Draft-greeting tool        │
+│  • Baileys WA bridge        │     │  • FastAPI + LangChain          │
+│  • SQLite writes             │     │  • Structured output (Pydantic) │
+│  • Express REST API         │     │  • Single LLM call per group   │
 └─────────────────────────────┘     └──────────────────────────────┘
               │                                    │
               └──────────────┬─────────────────────┘
@@ -41,7 +41,7 @@ Three processes that share a single SQLite database:
 |---|---|
 | WhatsApp bridge | [Baileys](https://github.com/WhiskeySockets/Baileys) |
 | Backend API | Node.js + Express + better-sqlite3 |
-| AI agent | Python + LangGraph + OpenAI GPT |
+| AI agent | Python + FastAPI + LangChain + OpenAI GPT |
 | Database | SQLite (shared between backend and agent) |
 | Frontend | Vite + React + Tailwind CSS |
 
@@ -50,7 +50,7 @@ Three processes that share a single SQLite database:
 ## Features
 
 - **Message ingestion** — all incoming WhatsApp group messages stored to SQLite
-- **Daily digest** — LangGraph agent summarises each enabled group on demand
+- **Daily digest** — LangChain structured output summarises each enabled group on demand
 - **Occasion detection** — agent detects birthdays and other occasions, drafts a greeting
 - **Human-in-the-loop** — approve, edit, or reject every draft before it's sent
 - **Group management** — enable/disable summarization per group via API
@@ -148,7 +148,7 @@ Open [http://localhost:5173](http://localhost:5173).
 │       ├── db/       # SQLite schema + queries
 │       └── api/      # Express route handlers
 ├── agent/            # Python LangGraph agent
-│   ├── agent.py      # FastAPI app + LangGraph graph
+│   ├── agent.py      # FastAPI app + LangChain structured output
 │   ├── tools.py      # save_summary, write_message tools
 │   └── prompts.py    # LLM prompt templates
 ├── frontend/         # Vite + React dashboard
