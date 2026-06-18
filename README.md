@@ -8,7 +8,7 @@ Built as a capstone project for an AI engineering cohort.
 
 ## Demo
 
-> _Video coming June 6_
+[Watch the demo on Google Drive](https://drive.google.com/file/d/13ncLLtTrGZIWpb0Fe9BsLHsOtgR6sWBN/view?usp=sharing)
 
 ---
 
@@ -41,7 +41,7 @@ Three processes that share a single SQLite database:
 |---|---|
 | WhatsApp bridge | [Baileys](https://github.com/WhiskeySockets/Baileys) |
 | Backend API | Node.js + Express + better-sqlite3 |
-| AI agent | Python + LangGraph + Anthropic Claude (Haiku / Sonnet) |
+| AI agent | Python + LangGraph + OpenAI GPT |
 | Database | SQLite (shared between backend and agent) |
 | Frontend | Vite + React + Tailwind CSS |
 
@@ -63,13 +63,13 @@ Three processes that share a single SQLite database:
 
 - Node.js 18+
 - Python 3.11+
-- An OpenAI API key
+- An OpenAI API key (for the LangGraph agent)
 
 ### 1. Clone & install
 
 ```bash
-git clone https://github.com/hiralj/whatsapp-manager.git
-cd whatsapp-manager
+git clone https://github.com/hiralj/whatsapp-ai-manager.git
+cd whatsapp-ai-manager
 
 # Backend
 cd backend && npm install && cd ..
@@ -111,11 +111,11 @@ The session is saved to `backend/auth_info/` — **never commit this directory**
 ### 4. Start all three processes
 
 ```bash
-# Terminal 1
-cd backend && npm start
+# Terminal 1 — start the Python agent first (backend depends on it)
+cd agent && ./start.sh
 
 # Terminal 2
-cd agent && source venv/bin/activate && python agent.py
+cd backend && npm start
 
 # Terminal 3
 cd frontend && npm run dev
